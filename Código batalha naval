@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <stdbool.h>
+
+#define TAM 10
+#define AGUA '~'
+#define NAVIO 'N'
+#define ACERTO 'X'
+#define ERRO 'O'
+
+// Tabuleiros
+char tabuleiroJogador[TAM][TAM];
+char tabuleiroComputador[TAM][TAM];
+char tabuleiroVisivel[TAM][TAM]; // O que o jogador vê do computador
+
+// Tipos de navios
+typedef struct {
+    int tamanho;
+    int quantidade;
+} Navio;
+
+Navio frota[4] = {
+    {5, 1},  // Porta-aviões
+    {4, 1},  // Couraçado
+    {3, 2},  // Contratorpedeiros
+    {2, 1}   // Submarino
+};
+
+// Inicializa um tabuleiro com água
+void inicializarTabuleiro(char tabuleiro[TAM][TAM]) {
+    for (int i = 0; i < TAM; i++) {
+        for (int j = 0; j < TAM; j++) {
+            tabuleiro[i][j] = AGUA;
+        }
+    }
+}
+
+// Exibe um tabuleiro
+void mostrarTabuleiro(char tabuleiro[TAM][TAM], bool mostrarNavios) {
+    printf("   A B C D E F G H I J\n");
+    for (int i = 0; i < TAM; i++) {
+        printf("%2d ", i + 1);
+        for (int j = 0; j < TAM; j++) {
+            if (!mostrarNavios && tabuleiro[i][j] == NAVIO) {
+                printf("%c ", AGUA);
+            } else {
+                printf("%c ", tabuleiro[i][j]);
+            }
+        }
+        printf("\n");
+    }
+}
+
+// Verifica se é possível posicionar um navio
+bool posicaoValida(char tabuleiro[TAM][TAM], int linha, int coluna, int tamanho, bool vertical) {
+    if (vertical) {
+        if (linha + tamanho > TAM) return false;
+        for (int i = linha; i < linha + tamanho; i++) {
+            if (tabuleiro[i][coluna] != AGUA) return false;
+        }
+    } else {
+        if (coluna + tamanho > TAM) return false;
+        for (int j = coluna; j < coluna + tamanho; j++) {
+            if (tabuleiro[linha][j] != AGUA) return false;
+        }
+    }
+    return true;
+}
+
+// Posiciona um navio no tabuleiro
+void posicionarNavio(char tabuleiro[TAM][TAM], int linha, int coluna, int tamanho, bool vertical) {
+    if (vertical) {
+        for (int i = linha; i < linha + tamanho; i++) {
+            tabuleiro[i][coluna] = NAVIO;
+        }
+    }
